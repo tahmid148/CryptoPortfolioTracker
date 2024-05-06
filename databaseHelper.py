@@ -1,6 +1,5 @@
 import mysql.connector
 import pandas as pd
-from typing import List
 from classes.order import Order
 
 
@@ -31,19 +30,9 @@ def insert_row(date, pair, side, price, size):
     cursor.close()
 
 # Returns a dataframe of all rows in Orders table
-def get_all_rows() -> List[Order]:
-    cursor = connnection.cursor()
-
+def get_all_rows() -> pd.DataFrame:
     query = "SELECT * FROM Orders"
-    cursor.execute(query)
-    rows = cursor.fetchall()
-
-    orders = []
-    for row in rows:
-        orders.append(Order(row[0], row[1], row[2], row[3], row[4]))
-
-    cursor.close()
-    return orders
+    return pd.read_sql_query(query, connnection)
 
 def close_connection():
     connnection.close()
