@@ -33,6 +33,51 @@ def insert_row(date, pair, side, price, size):
 def get_all_rows() -> pd.DataFrame:
     query = "SELECT * FROM Orders"
     return pd.read_sql_query(query, connnection)
+    
 
+# Calculate unrealised profit/loss for a given pair
+def calculate_unr_profit_loss(pair, currentPrice):
+    df = get_all_rows()
+    filtered_df = df[df['PAIR'] == pair]
+    buy_df = filtered_df[filtered_df['SIDE'] == 'BUY']
+    sell_df = filtered_df[filtered_df['SIDE'] == 'SELL']
+    
+    total_buy_size = buy_df['SIZE'].sum()
+    total_sell_size = sell_df['SIZE'].sum()
+    current_size = total_buy_size - total_sell_size
+    
+    # Remaining size
+    print(current_size)
+
+    # Find the average buy price
+    average_buy_price = (buy_df['SIZE'] / total_buy_size) * (buy_df ['PRICE'])
+
+    return (current_size * currentPrice) - average_buy_price.sum()
+
+def calculate_realised_profit_loss(pair):
+    df = get_all_rows()
+    filtered_df = df[df['PAIR'] == pair]
+    buy_df = filtered_df[filtered_df['SIDE'] == 'BUY']
+    sell_df = filtered_df[filtered_df['SIDE'] == 'SELL']
+
+    total_buy_size = buy_df['SIZE'].sum()
+    total_sell_size = sell_df['SIZE'].sum()
+    
+    # Calculate the weighted average buy price
+    average_buy_price = (buy_df['SIZE'] * buy_df['PRICE']).sum() / total_buy_size
+    
+    # Calculate the total cost basis for the sold ETH
+    total_cost_of_sold = average_buy_price * total_sell_size
+    
+    # Calculate the total revenue from sold ETH
+    total_revenue_from_sales = (sell_df['SIZE'] * sell_df['PRICE']).sum()
+    
+    # Calculate realized profit or loss
+    realized_profit_loss = total_revenue_from_sales - total_cost_of_sold
+
+    return realized_profit_loss
+
+
+    
 def close_connection():
     connnection.close()
