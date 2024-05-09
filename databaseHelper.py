@@ -36,8 +36,9 @@ def get_all_rows() -> pd.DataFrame:
     
 
 # Calculate unrealised profit/loss for a given pair
-def calculate_unr_profit_loss(pair, currentPrice):
+def calculate_unr_profit_loss(pair):
     df = get_all_rows()
+    current_price = 500 # TODO: this needs to be some get price function for the pair
     filtered_df = df[df['PAIR'] == pair]
     buy_df = filtered_df[filtered_df['SIDE'] == 'BUY']
     sell_df = filtered_df[filtered_df['SIDE'] == 'SELL']
@@ -52,7 +53,7 @@ def calculate_unr_profit_loss(pair, currentPrice):
     # Find the average buy price
     average_buy_price = (buy_df['SIZE'] / total_buy_size) * (buy_df ['PRICE'])
 
-    return (current_size * currentPrice) - average_buy_price.sum()
+    return (current_size * current_price) - average_buy_price.sum()
 
 def calculate_realised_profit_loss(pair):
     df = get_all_rows()
@@ -76,6 +77,24 @@ def calculate_realised_profit_loss(pair):
     realized_profit_loss = total_revenue_from_sales - total_cost_of_sold
 
     return realized_profit_loss
+
+def get_current_holdings():
+    df = get_all_rows()
+    pairs = df['PAIR'].unique()
+
+    holdings = {}
+
+    for pair in pairs:
+        pairs_df = df[df['PAIR'] == pair]
+
+        total_buy_size = pairs_df[pairs_df['SIDE'] == 'BUY']['SIZE'].sum()
+        total_sell_size = pairs_df[pairs_df['SIDE'] == 'SELL']['SIZE'].sum()
+
+        net_holdings = total_buy_size - total_sell_size
+
+        holdings[pair] = net_holdings
+    return holdings
+
 
 
     
