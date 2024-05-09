@@ -1,10 +1,11 @@
-import databaseHelper
+import helpers.databaseHelper as databaseHelper
+import helpers.exchangeHelper as exchangeHelper
 from classes.order import Order
+
 
 def main():
     print("main")
-    profit = databaseHelper.get_current_holdings()
-    print(profit)
+    exchangeHelper.get_pair_price('ETH/USDT', 'KUC')
     databaseHelper.close_connection()
 
 
