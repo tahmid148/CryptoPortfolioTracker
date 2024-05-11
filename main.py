@@ -6,9 +6,8 @@ from classes.order import Order
 
 def main():
     exchangeHelper = ExchangeHelper.ExchangeHelper()
-
-    eth_price = exchangeHelper.get_pair_price('ETH/USDT', constants.KUCOIN)
-    print(eth_price)
+    databaseHelper = DatabaseHelper.DatabaseHelper()
+    
 
 if __name__ == "__main__":
     main()
