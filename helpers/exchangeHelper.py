@@ -1,5 +1,14 @@
 import ccxt
+import constants
 
-def get_pair_price(pair, exchange):
-    kucoin = ccxt.kucoin()
-    print(kucoin.fetch_ticker(pair)['last'])
+class ExchangeHelper:
+    def __init__(self):
+        self.ccxt_kucoin = ccxt.kucoin()
+        self.ccxt_mexc = ccxt.mexc()
+
+    def get_pair_price(self, pair: str, exchange: str) -> int:
+        if (exchange == constants.KUCOIN):
+            last_price = self.ccxt_kucoin.fetch_ticker(pair)['last']
+        elif exchange == constants.MEXC:
+            last_price = self.ccxt_mexc.fetch_ticker(pair)['last']
+        return last_price
