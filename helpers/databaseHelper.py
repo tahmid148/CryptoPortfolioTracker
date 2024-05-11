@@ -22,7 +22,7 @@ class DatabaseHelper:
 
     # Insert a row into the Orders table
     def insert_row(self, date, pair, side, price, size) -> None:
-        cursor = self.connnection.cursor()
+        cursor = self.connection.cursor()
         
         insert_query = """
             INSERT INTO Orders (`DATE`, `PAIR`, `SIDE`, `PRICE`, `SIZE`)
@@ -30,13 +30,13 @@ class DatabaseHelper:
         """
         values = (date, pair, side, price, size)
         cursor.execute(insert_query, values)
-        self.connnection.commit()
+        self.connection.commit()
         cursor.close()
 
     # Returns a dataframe of all rows in Orders table
     def _get_all_rows(self) -> pd.DataFrame:
         query = "SELECT * FROM Orders"
-        return pd.read_sql_query(query, self.connnection)
+        return pd.read_sql_query(query, self.connection)
     
 
     # Calculate unrealised profit/loss for a given pair
@@ -82,11 +82,11 @@ class DatabaseHelper:
 
         return realized_profit_loss
 
-    def get_current_holdings(self):
+    def get_current_holdings(self) -> pd.DataFrame:
         df = self._get_all_rows()
         pairs = df['PAIR'].unique()
 
-        holdings = {}
+        holdings = []
 
         for pair in pairs:
             pairs_df = df[df['PAIR'] == pair]
@@ -96,6 +96,6 @@ class DatabaseHelper:
 
             net_holdings = total_buy_size - total_sell_size
 
-            holdings[pair] = net_holdings
-        return holdings
+            holdings.append({'Pair': pair, 'Size': net_holdings})
+        return pd.DataFrame(holdings)
     
