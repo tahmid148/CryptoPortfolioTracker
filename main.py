@@ -10,6 +10,7 @@ def main():
 
     holdings_df = databaseHelper.get_current_holdings()
     holdings_df['Price'] = holdings_df['Pair'].apply(lambda x: exchangeHelper.get_pair_price(x, constants.KUCOIN)) * holdings_df['Size']
+    holdings_df['Allocation'] = (holdings_df['Price'] / (holdings_df['Price'].sum())) * 100
     print(holdings_df)
     
 
